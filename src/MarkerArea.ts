@@ -1122,7 +1122,7 @@ export class MarkerArea {
           break;
         }
         case 'zoom-out': {
-          this.zoomLevel = 1;
+          this.stepZoomOut();
           break;
         }
         case 'notes': {
@@ -1332,6 +1332,17 @@ export class MarkerArea {
       zoomStepIndex < this.zoomSteps.length - 1
         ? this.zoomSteps[zoomStepIndex + 1]
         : this.zoomSteps[0];
+  }
+
+  /**
+   * Iterate zoom steps (@linkcode zoomSteps).
+   * Next zoom level is selected or returns to the first zoom level restarting the sequence.
+   *
+   * @author Oucema JLAIEL
+   */
+  public stepZoomOut(): void {
+    const zoomStepIndex = this.zoomSteps.indexOf(this.zoomLevel);
+    this.zoomLevel = zoomStepIndex <= this.zoomSteps.length - 1 ? this.zoomSteps[zoomStepIndex - 1] : this.zoomSteps[0];
   }
 
   private prevPanPoint: IPoint = { x: 0, y: 0 };
@@ -1562,7 +1573,7 @@ export class MarkerArea {
         );
       } else if (this.mode === 'select') {
         const hitMarker = this.markers.find((m) => m.ownsTarget(ev.target));
-        if (hitMarker !== undefined) {
+        if (hitMarker !== undefined && ev.shiftKey === true) {
           this.setCurrentMarker(hitMarker);
           this.isDragging = true;
           this.currentMarker.pointerDown(
