@@ -1,8 +1,6 @@
 import { SvgHelper } from './core/SvgHelper';
 import { Activator } from './core/Activator';
 import { Renderer } from './core/Renderer';
-
-import Logo from './assets/markerjs-logo-m.svg';
 import { MarkerBase } from './core/MarkerBase';
 import { Toolbar, ToolbarButtonType } from './ui/Toolbar';
 import { Toolbox } from './ui/Toolbox';
@@ -101,8 +99,6 @@ export class MarkerArea {
   private overlayContainer: HTMLDivElement;
 
   private touchPoints = 0;
-
-  private logoUI: HTMLElement;
 
   /**
    * `targetRoot` is used to set an alternative positioning root for the marker.js UI.
@@ -243,7 +239,7 @@ export class MarkerArea {
 
   /**
    * Returns true if undo operation can be performed (undo stack is not empty).
-   * 
+   *
    * @since 2.26.0
    */
   public get isUndoPossible(): boolean {
@@ -256,7 +252,7 @@ export class MarkerArea {
 
   /**
    * Returns true if redo operation can be performed (redo stack is not empty).
-   * 
+   *
    * @since 2.26.0
    */
    public get isRedoPossible(): boolean {
@@ -442,16 +438,9 @@ export class MarkerArea {
     this.initMarkerCanvas();
     this.initOverlay();
     this.attachEvents();
+
     if (this.settings.displayMode === 'popup') {
       this.onPopupTargetResize();
-    }
-
-    if (!Activator.isLicensed) {
-      // NOTE:
-      // before removing this call please consider supporting marker.js
-      // by visiting https://markerjs.com/ for details
-      // thank you!
-      this.addLogo();
     }
 
     this._isOpen = true;
@@ -706,8 +695,6 @@ export class MarkerArea {
       this.toolbar.adjustLayout();
     }
 
-    this.positionLogo();
-
     this.scaleMarkers(scaleX, scaleY);
 
     this._isResizing = false;
@@ -735,6 +722,7 @@ export class MarkerArea {
   private setEditingTarget() {
     this.imageWidth = Math.round(this.target.clientWidth);
     this.imageHeight = Math.round(this.target.clientHeight);
+    console.log({imageHeight: this.imageHeight, imageWidth: this.imageWidth});
     if (
       this.target instanceof HTMLImageElement &&
       this.editingTarget instanceof HTMLImageElement
@@ -842,64 +830,6 @@ export class MarkerArea {
     window.removeEventListener('pointerleave', this.onPointerUp);
     window.removeEventListener('resize', this.onWindowResize);
     window.removeEventListener('keyup', this.onKeyUp);
-  }
-
-  /**
-   * NOTE:
-   *
-   * before removing or modifying this method please consider supporting marker.js
-   * by visiting https://markerjs.com/#price for details
-   *
-   * thank you!
-   */
-  private addLogo() {
-    this.logoUI = document.createElement('div');
-    this.logoUI.style.display = 'inline-block';
-    this.logoUI.style.margin = '0px';
-    this.logoUI.style.padding = '0px';
-    this.logoUI.style.fill = '#333333';
-
-    const link = document.createElement('a');
-    link.href = 'https://markerjs.com/';
-    link.target = '_blank';
-    link.innerHTML = Logo;
-    link.title = 'Powered by marker.js';
-
-    link.style.display = 'grid';
-    link.style.alignItems = 'center';
-    link.style.justifyItems = 'center';
-    link.style.padding = '3px';
-    link.style.width = '20px';
-    link.style.height = '20px';
-
-    this.logoUI.appendChild(link);
-
-    this.editorCanvas.appendChild(this.logoUI);
-
-    this.logoUI.style.position = 'absolute';
-    this.logoUI.style.pointerEvents = 'all';
-    this.positionLogo();
-  }
-
-  private positionLogo() {
-    if (this.logoUI) {
-      if (this.uiStyleSettings.logoPosition !== 'right') {
-        this.logoUI.style.left = `${this.markerImageHolder.offsetLeft + 10}px`;
-      } else {
-        this.logoUI.style.left = `${
-          this.markerImageHolder.offsetLeft +
-          this.markerImageHolder.offsetWidth -
-          this.logoUI.clientWidth -
-          10
-        }px`;
-      }
-      this.logoUI.style.top = `${
-        this.markerImageHolder.offsetTop +
-        this.markerImageHolder.offsetHeight -
-        this.logoUI.clientHeight -
-        10
-      }px`;
-    }
   }
 
   private overrideOverflow() {
@@ -1408,7 +1338,10 @@ export class MarkerArea {
       this.markerImage.removeChild(this.markerImage.lastChild);
     }
 
+    console.log("---------------- MARKER JS 2 -------------------");
+
     state.markers.forEach((markerState) => {
+      console.log({markerState});
       const markerType = this._availableMarkerTypes.find(
         (mType) => mType.typeName === markerState.typeName
       );
@@ -1573,8 +1506,7 @@ export class MarkerArea {
         );
       } else if (this.mode === 'select') {
         const hitMarker = this.markers.find((m) => m.ownsTarget(ev.target));
-        if (hitMarker !== undefined && ev.shiftKey === true) {
-          this.setCurrentMarker(hitMarker);
+        if (hitMarker !== undefined && this.currentMarker) {
           this.isDragging = true;
           this.currentMarker.pointerDown(
             this.clientToLocalCoordinates(ev.clientX, ev.clientY),
@@ -1702,7 +1634,6 @@ export class MarkerArea {
       }
     }
     this.positionMarkerImage();
-    this.positionLogo();
   }
 
   /**

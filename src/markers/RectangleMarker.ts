@@ -10,8 +10,8 @@ import { MarkerBaseState } from '../core/MarkerBaseState';
  */
 export abstract class RectangleMarker extends RectangularBoxMarkerBase {
   /**
-   * String type name of the marker type. 
-   * 
+   * String type name of the marker type.
+   *
    * Used when adding {@link MarkerArea.availableMarkerTypes} via a string and to save and restore state.
    */
   public static title = 'Rectangle marker';
@@ -56,7 +56,7 @@ export abstract class RectangleMarker extends RectangularBoxMarkerBase {
 
   /**
    * Returns true if passed SVG element belongs to the marker. False otherwise.
-   * 
+   *
    * @param el - target element.
    */
   public ownsTarget(el: EventTarget): boolean {
@@ -78,12 +78,15 @@ export abstract class RectangleMarker extends RectangularBoxMarkerBase {
       ['stroke-dasharray', this.strokeDasharray],
       ['opacity', this.opacity.toString()]
     ]);
+
+    const visualTransform = this.visual.style.transform;
+    console.log("create visual :", this.visual, {visualTransform});
     this.addMarkerVisualToContainer(this.visual);
   }
 
   /**
    * Handles pointer (mouse, touch, stylus, etc.) down event.
-   * 
+   *
    * @param point - event coordinates.
    * @param target - direct event target element.
    */
@@ -100,7 +103,7 @@ export abstract class RectangleMarker extends RectangularBoxMarkerBase {
 
   /**
    * Handles marker manipulation (move, resize, rotate, etc.).
-   * 
+   *
    * @param point - event coordinates.
    */
   public manipulate(point: IPoint): void {
@@ -129,7 +132,7 @@ export abstract class RectangleMarker extends RectangularBoxMarkerBase {
 
   /**
    * Handles pointer (mouse, touch, stylus, etc.) up event.
-   * 
+   *
    * @param point - event coordinates.
    * @param target - direct event target element.
    */
@@ -201,7 +204,7 @@ export abstract class RectangleMarker extends RectangularBoxMarkerBase {
 
   /**
    * Restores previously saved marker state.
-   * 
+   *
    * @param state - previously saved state.
    */
   public restoreState(state: MarkerBaseState): void {
@@ -219,7 +222,7 @@ export abstract class RectangleMarker extends RectangularBoxMarkerBase {
 
   /**
    * Scales marker. Used after the image resize.
-   * 
+   *
    * @param scaleX - horizontal scale
    * @param scaleY - vertical scale
    */
