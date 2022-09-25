@@ -81,8 +81,8 @@ export class MarkerArea {
 
   private width: number;
   private height: number;
-  private imageWidth: number;
-  private imageHeight: number;
+  public imageWidth: number;
+  public imageHeight: number;
   private left: number;
   private top: number;
   private windowHeight: number;
@@ -95,7 +95,7 @@ export class MarkerArea {
   private uiDiv: HTMLDivElement;
   private contentDiv: HTMLDivElement;
   private editorCanvas: HTMLDivElement;
-  private editingTarget: HTMLImageElement | HTMLCanvasElement;
+  public editingTarget: HTMLImageElement | HTMLCanvasElement;
   private overlayContainer: HTMLDivElement;
 
   private touchPoints = 0;
@@ -208,7 +208,7 @@ export class MarkerArea {
   private mode: MarkerAreaMode = 'select';
 
   private currentMarker?: MarkerBase;
-  private markers: MarkerBase[] = [];
+  public markers: MarkerBase[] = [];
 
   private isDragging = false;
 
@@ -320,7 +320,7 @@ export class MarkerArea {
    *
    * @since 2.12.0
    */
-  public zoomSteps = [1, 1.5, 2, 4];
+  public zoomSteps = [1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2];
   private _zoomLevel = 1;
   /**
    * Gets current zoom level.
@@ -429,6 +429,7 @@ export class MarkerArea {
     this.blur = this.blur.bind(this);
     this.markerStateChanged = this.markerStateChanged.bind(this);
     this.switchToSelectMode = this.switchToSelectMode.bind(this);
+    this.onWheel = this.onWheel.bind(this);
   }
 
   private open(): void {
@@ -814,6 +815,7 @@ export class MarkerArea {
     window.addEventListener('pointerleave', this.onPointerUp);
     window.addEventListener('resize', this.onWindowResize);
     window.addEventListener('keyup', this.onKeyUp);
+    window.addEventListener('wheel', this.onWheel, { passive: false })
   }
 
   private detachEvents() {
@@ -830,6 +832,8 @@ export class MarkerArea {
     window.removeEventListener('pointerleave', this.onPointerUp);
     window.removeEventListener('resize', this.onWindowResize);
     window.removeEventListener('keyup', this.onKeyUp);
+    window.removeEventListener('wheel', this.onWheel)
+
   }
 
   private overrideOverflow() {
@@ -900,7 +904,7 @@ export class MarkerArea {
 
     this.uiDiv = document.createElement('div');
     this.uiDiv.style.display = 'flex';
-    this.uiDiv.style.flexDirection = 'column';
+    // this.uiDiv.style.flexDirection = 'column';
     this.uiDiv.style.flexGrow = '2';
     this.uiDiv.style.margin =
       this.settings.displayMode === 'popup'
@@ -932,17 +936,18 @@ export class MarkerArea {
     this.contentDiv.style.flexShrink = '1';
     if (this.settings.displayMode === 'popup') {
       this.contentDiv.style.backgroundColor = this.uiStyleSettings.canvasBackgroundColor;
-      this.contentDiv.style.maxHeight = `${
+      /*this.contentDiv.style.maxHeight = `${
         this.windowHeight -
         this.settings.popupMargin * 2 -
         this.uiStyleSettings.toolbarHeight * 3.5
-      }px`;
+      }px`;*/
       // this.contentDiv.style.maxHeight = `calc(100vh - ${
       //   this.settings.popupMargin * 2 + this.uiStyleSettings.toolbarHeight * 3.5}px)`;
       this.contentDiv.style.maxWidth = `calc(100vw - ${
         this.settings.popupMargin * 2
       }px)`;
     }
+    this.contentDiv.classList.add('no-scrollbar');
     this.contentDiv.style.overflow = 'auto';
     this.uiDiv.appendChild(this.contentDiv);
 
@@ -1626,11 +1631,7 @@ export class MarkerArea {
         this.coverDiv.style.left = '0px';
         this.coverDiv.style.width = '100vw';
         this.coverDiv.style.height = `${this.windowHeight}px`;
-        this.contentDiv.style.maxHeight = `${
-          this.windowHeight -
-          this.settings.popupMargin * 2 -
-          this.styles.settings.toolbarHeight * 3.5
-        }px`;
+        this.contentDiv.style.maxHeight = `100%`;
       }
     }
     this.positionMarkerImage();
@@ -1748,6 +1749,27 @@ export class MarkerArea {
       this.eventListeners['blur'].forEach((listener) =>
         listener(new MarkerAreaEvent(this))
       );
+    }
+  }
+
+  public onWheel(event: WheelEvent): void {
+    if (!event.ctrlKey) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (event.deltaY < 0) {
+      if (this.zoomLevel === this.zoomSteps[this.zoomSteps.length - 1]) {
+        return;
+      }
+
+      this.stepZoom();
+    }
+
+    if (event.deltaY > 0) {
+      this.stepZoomOut();
     }
   }
 }

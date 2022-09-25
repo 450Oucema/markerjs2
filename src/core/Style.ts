@@ -19,7 +19,7 @@ export class StyleManager {
   /**
    * Prefix used for all internally created CSS classes.
    */
-  private _classNamePrefixBase = '__markerjs2_';
+  private _classNamePrefixBase = 'vps_crop_';
 
   /**
    * Static CSS class name used for the wrapper element.

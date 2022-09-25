@@ -28,11 +28,11 @@ export class RectangularBoxMarkerBase extends MarkerBase {
   /**
    * Marker width.
    */
-  protected width = 0;
+  public width = 0;
   /**
    * Marker height.
    */
-  protected height = 0;
+  public height = 0;
 
   /**
    * The default marker size when the marker is created with a click (without dragging).
@@ -231,6 +231,7 @@ export class RectangularBoxMarkerBase extends MarkerBase {
    */
   protected moveVisual(point: IPoint): void {
     console.log("move visual", {point});
+    this.stateChanged();
     this.visual.style.transform = `translate(${point.x}px, ${point.y}px)`;
     // const translate = this.visual.transform.baseVal.getItem(0);
     // translate.setTranslate(point.x, point.y);
