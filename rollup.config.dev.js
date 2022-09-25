@@ -27,7 +27,10 @@ export default {
         src: 'test/manual/images/**/*', dest: 'build-dev/images'
       }]
     }),
-    dev('build-dev'),
+    dev({
+      dirs: ['build-dev'],
+      port: 5555
+    }),
     livereload('build-dev')
   ]
 };
