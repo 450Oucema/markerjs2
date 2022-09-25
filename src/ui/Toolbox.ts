@@ -35,12 +35,12 @@ export class Toolbox {
       new StyleClass(
         'toolbox',
         `
-      width: 100%;
+      width: 40px;
       flex-shrink: 0;
       display: flex;
       flex-direction: column;
       font-family: sans-serif;
-      ${this.displayMode === 'popup' ? 'height:' + this.uiStyleSettings.toolbarHeight * 2.5 + 'px;' : ''}
+      ${this.displayMode === 'popup' ? 'height: 100%;' : ''}
       box-sizing: content-box;
       ${this.displayMode === 'popup' ? `background-color: ${this.uiStyleSettings.canvasBackgroundColor};` : ''}
       ${this.displayMode === 'inline' ? `border-bottom-left-radius: ${Math.round(this.uiStyleSettings.toolbarHeight/10)}px;` : ''}
