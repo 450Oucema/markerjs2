@@ -177,20 +177,6 @@ export class Toolbar {
       this.markerButtonBlock.appendChild(this.overflowButton);
     }
 
-    const btnCrop = document.createElement('div');
-    btnCrop.className = `${this.toolbarButtonStyleClass.name}`;
-    btnCrop.setAttribute('data-type-name', 'crop');
-    //  ${
-    //   this.uiStyleSettings.toolbarButtonStyleColorsClassName ?
-    //   this.uiStyleSettings.toolbarButtonStyleColorsClassName : this.toolbarButtonStyleColorsClass.name}`;
-    btnCrop.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>`;
-    btnCrop.addEventListener('click', () => {
-      console.log('click crop button')
-      document.querySelector('#crop').dispatchEvent(new Event('click', { bubbles: true }))
-    });
-    this.buttons.push(btnCrop);
-    this.markerButtons.push(btnCrop);
-
     const resultButtonBlock = document.createElement('div');
     resultButtonBlock.className = this.toolbarBlockStyleClass.name;
     resultButtonBlock.style.whiteSpace = 'nowrap';
@@ -256,7 +242,20 @@ export class Toolbar {
         buttonIndex < this.markerButtons.length;
         buttonIndex++
       ) {
-        this.markerButtonBlock.appendChild(this.markerButtons[buttonIndex]);
+        if (
+          buttonIndex < numberToFit ||
+          (buttonIndex === numberToFit &&
+            this.markerButtons.length - 1 === numberToFit)
+        ) {
+          this.markerButtonBlock.appendChild(this.markerButtons[buttonIndex]);
+        } else {
+          if (buttonIndex === numberToFit) {
+            this.markerButtonBlock.appendChild(this.overflowButton);
+          }
+          this.markerButtonOverflowBlock.appendChild(
+            this.markerButtons[buttonIndex]
+          );
+        }
       }
     }
   }
@@ -355,12 +354,12 @@ export class Toolbar {
       new StyleClass(
         'toolbar',
         `
-      width: 40px;
+      width: 100%;
       flex-shrink: 0;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       justify-content: space-between;      
-      height: 100%;
+      height: ${this.uiStyleSettings.toolbarHeight}px;
       box-sizing: content-box;
       ${
         this.displayMode === 'inline'
@@ -405,7 +404,11 @@ export class Toolbar {
       new StyleClass(
         'toolbar-overflow-block',
         `
-
+        position: absolute;
+        top: ${this.uiStyleSettings.toolbarHeight}px;
+        max-width: ${this.uiStyleSettings.toolbarHeight * 2}px;
+        z-index: 10;
+        box-sizing: content-box;
       `
       )
     );
